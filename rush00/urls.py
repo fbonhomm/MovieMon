@@ -1,6 +1,6 @@
 
-from django.urls import include, path
+from django.conf.urls import url, include
 
 urlpatterns = [
-  path('/', include('moviemon.urls'))
+    url(r'^$', include('moviemon.urls'))
 ]
