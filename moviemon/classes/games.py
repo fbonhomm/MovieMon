@@ -10,20 +10,23 @@ from .players import Players
 class Games(Movies, Map, Players):
 
   def __init__(self):
-    self.catched = list()
+    self.moviedex = list()
     Map.__init__(self, settings.MAP_HEIGHT,
                  settings.MAP_WIDTH, settings.MAP_POSITION)
     Players.__init__(self)
 
-  def load(self, instance):
-    self = instance
+  def load(self, info):
+    self.moviedex = info.moviedex
+    Movies.__init__(self, movies=info.moviemon)
+    Map.__init__(self, settings.MAP_HEIGHT, settings.MAP_WIDTH, info.position)
+    Players.__init__(self, len(self.moviedex) + 1, info.movieballs)
     return self
 
   def dump(self):
     return {
       'position': self.get_position(),
-      'movieballs' self.get_movieballs(),
-      'moviedex': self.catched,
+      'movieballs': self.get_movieballs(),
+      'moviedex': self.moviedex,
       'moviemon': self.movies
     }
 
@@ -31,7 +34,7 @@ class Games(Movies, Map, Players):
     notCatch = list()
 
     for id in self.ids:
-      if id not in self.catched:
+      if id not in self.moviedex:
         notCatch.append(id)
 
     return notCatch[random.randint(0, len(notCatch) - 1)]
@@ -42,8 +45,8 @@ class Games(Movies, Map, Players):
     return self
 
   def get_strength(self):
-    return len(self.catched)
+    return len(self.moviedex)
   
   def set_catched(self, id):
     if id in self.movies:
-      self.catched.append(id)
+      self.moviedex.append(id)

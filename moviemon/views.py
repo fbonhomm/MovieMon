@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from .classes.games import Games
 
 def init(request):
-  # Movies()
-  Games()
+  game = Games()
+  game.load_default_settings()
+
   return HttpResponse('OK')
