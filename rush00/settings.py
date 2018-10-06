@@ -122,6 +122,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 BASE_IMG = os.path.join(BASE_DIR, 'moviemon/static/images/')
+BASE_SAVE = os.path.join(BASE_DIR, 'moviemon/')
 
 MAP_HEIGHT = 10
 MAP_WIDTH = 10
