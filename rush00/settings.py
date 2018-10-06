@@ -120,3 +120,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+BASE_IMG = os.path.join(BASE_DIR, 'moviemon/static/images/')
+
+MAP_HEIGHT = 10
+MAP_WIDTH = 10
+MAP_POSITION = 1
+
+MOVIES = [
+  'tt0111161', # rating 9.3
+  'tt0468569', # 9.0
+  'tt0137523', # 8.8
+  'tt8633296', # 1.6
+  'tt0185183', # 2.4
+  'tt1213644', # 1.9
+  'tt3778644', # 7
+  'tt3829266', # 5.9
+  'tt4881806', # 6.3
+  'tt8707374', # 5
+  'tt0118688', # 3.7
+  'tt4477536' # 4.4
+]
