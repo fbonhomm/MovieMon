@@ -1,0 +1,21 @@
+{% extends "screen.html" %}
+
+{% load static %}
+
+{% block inside_screen %}
+<div class="screen_map">
+
+	{% for y in grid.y %}
+		<div class="flex-container">
+			{% for x in grid.x %}
+				{% if y == player.0 and x == player.1 %}
+					<div class="pikachu"></div>
+				{% else %}
+					<div class="flex-item"></div>
+				{% endif %}
+			{% endfor %}
+		</div>
+	{% endfor %}
+</div>
+
+{% endblock %}

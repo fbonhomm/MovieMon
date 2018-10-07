@@ -1,0 +1,93 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% block style %}
+		<link rel="stylesheet" href="{% static 'css/style.css' %}" type='text/css' />
+		{% endblock %}
+		<title>MovieMon</title>
+	</head>
+
+	<body>
+		<div id="gameboy">
+			<div class="background">
+				<div class="top">
+					<div class="check-on">
+						<div class="off-on">
+							OFF . ON
+						</div>
+					</div>
+				</div>
+				<input type="checkbox" class="check" id="check">
+				<label for="check"></label>
+				<div class="bootup">Nintendo<sup>Ⓡ</sup></div>
+				{% block screen %} {% endblock %}
+				<div class="screen_text">DOT MATRIX WITH STEREO SOUND</div>
+				<div class="brand">GAME BOY</div>
+				<div class="controller"></div>
+
+				{% if button.down %}
+					<a href={{ button.down }}><div class="arrow_b"></div></a>
+				{% else %}
+					<a href=""><div class="arrow_b"></div></a>
+				{% endif %}
+
+				{% if button.right %}
+					<a href={{ button.right }}><div class="arrow_l"></div></a>
+				{% else %}
+					<a href=""><div class="arrow_l"></div></a>
+				{% endif %}
+
+				{% if button.left %}
+					<a href={{ button.left }}><div class="arrow_r"></div></a>
+				{% else %}
+					<a href=""><div class="arrow_r"></div></a>
+				{% endif %}
+
+				{% if button.right %}
+					<a href={{ button.up }}><div class="arrow_h"></div></a>
+				{% else %}
+					<a href=""><div class="arrow_h"></div></a>
+				{% endif %}
+
+				<div id="ab">
+					{% if button.a %}
+						<a href={{ button.a }}><div id="a"></div></a>
+					{% else %}
+						<a href=""><div id="a"></div></a>
+					{% endif %}
+
+					{% if button.b %}
+						<a href={{ button.b }}><div id="b"></div></a>
+					{% else %}
+						<a href=""><div id="b"></div></a>
+					{% endif %}
+				</div>
+				{% if button.select %}
+					<a href={{ button.select }}><div class="select"></div></a>
+				{% else %}
+					<a href=""><div class="select"></div></a>
+				{% endif %}
+
+				{% if button.start %}
+					<a href={{ button.start }}><div class="start"></div></a>
+				{% else %}
+					<a href=""><div class="start"></div></a>
+				{% endif %}
+				<ul id="speakers">
+					<li><li><li><li><li><li>
+				</ul>
+				<div class="phones">
+					<div class="headphones"></div>
+					PHONES
+					<ul class="strip-phones">
+						<li class="strip"></li>
+						<li class="strip"></li>
+						<li class="strip"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

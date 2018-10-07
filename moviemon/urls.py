@@ -1,8 +1,5 @@
-
 from django.conf.urls import url
-from django.urls import re_path
-
-from moviemon import views
+from . import views
 
 urlpatterns = [
   url(r'^$', views.init),

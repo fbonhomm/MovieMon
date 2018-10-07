@@ -1,0 +1,22 @@
+{% extends "screen.html" %}
+
+{% load static %}
+
+{% block inside_screen %}
+<img height="100%" width="100%" src="{% static 'images/base.jpg' %}">
+
+	{% if moviemon %}
+		<div class="event_object">
+			<img height="100%" width="100%" src="/static/images/{{ moviemon.id }}.jpg">
+		</div>
+	{% endif %}
+
+	{% if event.text %}
+		<p class="event_text_object">{{ event.text }}</p>
+	{% endif %}
+
+	<p class="battle_movieball">movieball: {{ player.movieball}}</p>
+	{% if event.text_item %}
+	{% endif %}
+
+{% endblock %}

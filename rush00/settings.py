@@ -56,7 +56,7 @@ ROOT_URLCONF = 'rush00.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['moviemon/templates/moviemon'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -143,3 +143,7 @@ MOVIES = [
   'tt0118688', # 3.7
   'tt4477536' # 4.4
 ]
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'moviemon/static/'),
+)
