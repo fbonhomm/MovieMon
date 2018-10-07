@@ -89,14 +89,14 @@ def init(request):
   return render(request, 'TitleScreen.html', context)
 
 
-def option(request):
+def options(request):
   
   game = _load_pickle()
 
   result = _information(game)
   context = {
           'button': {
-              'a': '/save_game',
+              'a': '/options/save_game/',
               'b': '/',
               'start': '/worldmap',
           }
@@ -107,8 +107,8 @@ def option(request):
   return render(request, 'Options.html', context)
 
 
-def WorldMap(request):
-    game = load_pickle()
+def worldmap(request):
+    game = _load_pickle()
 
     if 'direction' in request.GET:
         moved = False
@@ -130,24 +130,22 @@ def WorldMap(request):
         result = _information(game)
         result['event'] = evt
         print("information:", result)
-        
-        save_pickle(game)
     else:
         result = _information(game)
 
     print("information1:", result)
 
-    up = '/worldmap?direction=up&first=true' if result['up'] else '/worldmap?first=true'
-    down = '/worldmap?direction=down&first=true' if result['down'] else '/worldmap?first=true'
-    left = '/worldmap?direction=left&first=true' if result['left'] else '/worldmap?first=true'
-    right = '/worldmap?direction=right&first=true' if result['right'] else '/worldmap?first=true'
+    up = '/worldmap?direction=up' if result['up'] else '/worldmap'
+    down = '/worldmap?direction=down' if result['down'] else '/worldmap'
+    left = '/worldmap?direction=left' if result['left'] else '/worldmap'
+    right = '/worldmap?direction=right' if result['right'] else '/worldmap'
 
     player_yx = position(result['width'], result['position'])
 
     a = ''
     event_text =''
     if result.get('event') and result['event'] == 1:
-        a = '/battle/' + result['info_event']['id']
+        a = '/battle/' + result['info_event']['id'] + '?first=true'
         event_text = "You encounter a moviemon"
     if result.get('event') and result['event'] == 2:
         event_text = "You catch a movieball"
@@ -157,7 +155,7 @@ def WorldMap(request):
             'button': {
                 'a': a,
                 'start': '/moviedex',
-                'select': '/option',
+                'select': '/options',
                 'up': up,
                 'down': down,
                 'left': left,
@@ -177,6 +175,7 @@ def WorldMap(request):
             'event': event_text
         }
     print(context)
+    _save_pickle(game)
     return render(request, 'WorldMap.html', context)
 
 
@@ -284,10 +283,6 @@ def battle(request, id=None):
 
     return render(request, 'Battle.html', context)
   raise Http404('Id not conform.')
-
-
-def options(request):
-  return HttpResponse('OK')
 
 
 def save_game(request, slot=None):
