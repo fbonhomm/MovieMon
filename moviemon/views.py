@@ -5,10 +5,12 @@ import pickle
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
+from django.http import Http404
 
 from .classes.games import Games
 
 
+# -------------- PRIVATE --------------
 def _information_savefile(game):
   result = _information(game)
   result['saves'] = {'a': {}, 'b': {}, 'c': {}}
@@ -41,7 +43,7 @@ def _information(game, id=None):
   return result
 
 
-def load_pickle():
+def _load_pickle():
   game = Games()
 
   with open(settings.BASE_TMP + 'savefile', 'rb') as fd:
@@ -50,38 +52,40 @@ def load_pickle():
 
   return game
 
-def save_pickle(game):
+
+def _save_pickle(game):
   with open(settings.BASE_TMP + 'savefile', 'wb') as fd:
     pickle.dump(game.dump(), fd)
     fd.close()
 
 
+# -------------- PUBLIC --------------
 def init(request):
   game = Games()
   game.load_default_settings()
 
   result = _information(game)
 
-  save_pickle(game)
+  _save_pickle(game)
 
-  # return render(request, 'index.html', result)
-  context = {
-    'button': {
-      'a': '/worldmap',
-      'b': '/load',
-      'start': '/moviedex/',
-      'select': '/option'
-    },
-    'event': {
-      'film': 'test'
-    }
-  }
+  return render(request, 'index.html', result)
+  # context = {
+  #   'button': {
+  #     'a': '/worldmap',
+  #     'b': '/load',
+  #     'start': '/moviedex',
+  #     'select': '/option'
+  #   },
+  #   'event': {
+  #     'film': 'test'
+  #   }
+  # }
 
-  return render(request, 'TitleScreen.html', context)
+  # return render(request, 'TitleScreen.html', context)
 
 
 def worldmap(request):
-  game = load_pickle()
+  game = _load_pickle()
 
   result = _information(game)
 
@@ -106,13 +110,57 @@ def worldmap(request):
     result = _information(game)
     result['event'] = evt
 
-  save_pickle(game)
+  _save_pickle(game)
 
   return render(request, 'index.html', result)
 
 
-def moviedex(request, id):
-  game = load_pickle()
+def moviedex(request):
+  game = _load_pickle()
+
+  result = _information(game)
+
+  movie = None
+  id = request.GET['id'] if 'id' in request.GET else None
+  result['moviedex'] = game.get_moviedex()
+
+  if (id and game.isExisting(id) == False) or (id and game.isCatch(id) == False):
+    raise Http404('Id not conform.')
+
+  if id is not None:
+    for idx, m in enumerate(result['moviedex']):
+      if id == m:
+        movie = m
+        prev = ('/moviedex?id=' + result['moviedex'][idx - 1]) if (idx - 1) >= 0 else '/moviedex'
+        suiv = ('/moviedex?id=' + result['moviedex'][idx + 1]) if (idx + 1) < len(result['moviedex']) else '/moviedex?id=' + result['moviedex'][idx]
+        break
+  else:
+    movie = result['moviedex'][:1][0] if len(result['moviedex'][:1]) > 0 else None
+    prev = ''
+    suiv = ('/moviedex?id=' + result['moviedex'][1:2][0]) if len(result['moviedex'][1:2]) > 0 else ''
+
+  context = {
+    'button': {
+      'a': ('/moviedex/' + str(movie)) if movie is not None else '/moviedex',
+      'select': '/worldmap',
+      'left': prev,
+      'right': suiv
+    },
+    'data': {
+      'moviemon_id': movie if movie else None,
+    },
+    'event': {
+      'film': 'test'
+    }
+  }
+
+  _save_pickle(game)
+
+  return render(request, 'MovieDex.html', context)
+
+
+def moviedex_id(request, id=None):
+  game = _load_pickle()
 
   result = _information(game)
 
@@ -120,7 +168,7 @@ def moviedex(request, id):
     result['details'] = game.get_movie_id(id)
     context = {
         'button': {
-          'b': '/moviedex/',
+          'b': '/moviedex',
         },
         'data': {
           'details': result['details'] if 'details' in result else None
@@ -129,74 +177,48 @@ def moviedex(request, id):
           'film': 'test'
         }
     }
-  else:
-    id = request.GET['id'] if 'id' in request.GET else None
-    result['moviedex'] = game.get_moviedex()
 
-    if id is not None:
-      for idx, m in enumerate(result['moviedex']):
-        if id == m:
-          movie = m
-          prev = ('/moviedex/?id=' + result['moviedex'][idx - 1]) if (idx - 1) >= 0 else '/moviedex/'
-          suiv = ('/moviedex/?id=' + result['moviedex'][idx + 1]) if (idx + 1) < len(result['moviedex']) else '/moviedex/?id=' + result['moviedex'][idx]
-          break
-    else:
-      movie = result['moviedex'][:1][0] if len(result['moviedex'][:1]) > 0 else None
-      prev = ''
-      suiv = ('/moviedex/?id=' + result['moviedex'][1:2][0]) if len(result['moviedex'][1:2]) > 0 else ''
+    _save_pickle(game)
 
-    context = {
-      'button': {
-        'a': '/moviedex/' + movie,
-        'select': '/worldmap/',
-        'left': prev,
-        'right': suiv
-      },
-      'data': {
-        'moviemon_id': movie if movie else None,
-        'details': result['details'] if 'details' in result else None
-      },
-      'event': {
-        'film': 'test'
+    return render(request, 'MovieDex.html', context)
+  raise Http404('Id not conform.')
+
+
+def battle(request, id=None):
+  game = _load_pickle()
+  context = _information(game, id)
+
+  if id and game.isExisting(id):
+    if game.isCatch(id) is True:
+      context['info_event']['text'] = ''
+      context['button'] = {
+        'a': '/worldmap',
+        'b': '/worldmap'
       }
-    }
-
-  save_pickle(game)
-
-  return render(request, 'MovieDex.html', context)
-
-
-def battle(request, id):
-  game = load_pickle()
-
-  if id and game.isCatch(id) is False:
-    context = _information(game, id)
-
-    if game.get_movieballs() <= 0:
+    elif game.get_movieballs() <= 0:
       context['info_event']['text'] = 'Ha les boules, il n\'a plus de movieballs'
       context['button'] = {
-        'a': '/worldmap/',
-        'b': '/worldmap/'
+        'a': '/worldmap',
+        'b': '/worldmap'
       }
     elif 'first' not in request.GET:
       catched = game.try_catch(id)
       context['info_event']['text'] = 'Oui je l\'ai eu !!!' if catched == True else 'HAAA j\'ai louper mon coup'
       context['button'] = {
-        'a': '/worldmap/' if catched == True else '/battle/' + id,
-        'b': '/worldmap/'
+        'a': '/worldmap' if catched == True else '/battle/' + id,
+        'b': '/worldmap'
       }
     else:
       context['info_event']['text'] = 'haut les mains voyous'
       context['button'] = {
         'a': '/battle/' + id,
-        'b': '/worldmap/'
+        'b': '/worldmap'
       }
-
-    save_pickle(game)
+    
+    _save_pickle(game)
 
     return render(request, 'Battle.html', context)
-    # return render(request, 'index.html', result)
-  return HttpResponse('Id not conform.')
+  raise Http404('Id not conform.')
 
 
 def options(request):
@@ -204,12 +226,16 @@ def options(request):
 
 
 def save_game(request, slot=None):
-  game = load_pickle()
+  game = _load_pickle()
+  loaded = False
 
   if not os.path.exists(settings.BASE_SAVE):
     os.makedirs(settings.BASE_SAVE)
 
   list_dirs = os.listdir(settings.BASE_SAVE)
+
+  if slot is not None and slot not in ['a', 'b', 'c']:
+    raise Http404('Slot not conform.')
 
   if slot is not None and slot in ['a', 'b', 'c']:
     nb_moviedex = len(game.get_moviedex())
@@ -226,17 +252,21 @@ def save_game(request, slot=None):
       result['name'] = slot
       pickle.dump(result, fd)
       fd.close()
+      loaded = True
+    
 
   # information on slots
   result = _information_savefile(game)
   result['saves_route'] = 'save_game'
-  save_pickle(game)
+  result['loaded'] = loaded
+  _save_pickle(game)
 
   return render(request, 'index.html', result)
 
 
 def load_game(request, slot=None):
-  game = load_pickle()
+  game = _load_pickle()
+  loaded = False
 
   if not os.path.exists(settings.BASE_SAVE):
     os.makedirs(settings.BASE_SAVE)
@@ -249,10 +279,12 @@ def load_game(request, slot=None):
         with open(os.path.join(settings.BASE_SAVE, d), 'rb') as fd:
           game.load(pickle.load(fd))
           fd.close()
+          loaded = True
 
   # information on slots
   result = _information_savefile(game)
   result['saves_route'] = 'load_game'
-  save_pickle(game)
+  result['loaded'] = loaded
+  _save_pickle(game)
 
   return render(request, 'index.html', result)
