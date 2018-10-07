@@ -8,7 +8,7 @@
 	{% for y in grid.y %}
 		<div class="flex-container">
 			{% for x in grid.x %}
-				{% if y == player.0 and x == player.1 %}
+				{% if y == player.y and x == player.x %}
 					<div class="pikachu"></div>
 				{% else %}
 					<div class="flex-item"></div>
@@ -16,6 +16,12 @@
 			{% endfor %}
 		</div>
 	{% endfor %}
+	<div class="map_info_player">
+		strength: {{ player.strength }}<br>
+		movieballs: {{ player.movieballs }}<br>
+		moviedex nb: {{ player.moviedex_nb }}
+	</div>
+	<div class="map_event">{{ event }}</div>
 </div>
 
 {% endblock %}
