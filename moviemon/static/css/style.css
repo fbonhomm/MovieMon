@@ -854,10 +854,16 @@ body {
 }
 
 .battle_movieball {
-	font-size: 0.3em;
+  height: 1%;
+  font-size: 0.2em;
 	position: absolute;
-	top: 54%;
-	left: 53%;
+	top: 48%;
+	left: 50%;
+}
+
+.battle_movieball_font {
+  height: 2%;
+  font-size: 1.2em;
 }
 
 .flex-container {

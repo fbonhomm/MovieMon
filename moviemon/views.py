@@ -71,21 +71,14 @@ def init(request):
   game = Games()
   game.load_default_settings()
 
-  result = _information(game)
+  context = {
+    'button': {
+      'a': '/worldmap',
+      'b': '/options/load_game/'
+    }
+  }
 
   _save_pickle(game)
-  
-  context = {
-            'button': {
-                'a': '/worldmap',
-                'b': '/load',
-                'start': '/moviedex',
-                'select': '/option'
-            },
-            'event': {
-                'film': 'test'
-            }
-        }
   return render(request, 'TitleScreen.html', context)
 
 
@@ -108,75 +101,73 @@ def options(request):
 
 
 def worldmap(request):
-    game = _load_pickle()
+  game = _load_pickle()
 
-    if 'direction' in request.GET:
-        moved = False
-    
-        if request.GET['direction'] == 'left':
-            moved = game.move_left()
-        if request.GET['direction'] == 'right':
-            moved = game.move_right()
-        if request.GET['direction'] == 'down':
-            moved = game.move_down()
-        if request.GET['direction'] == 'up':
-            moved = game.move_up()
-        
-        if moved == True:
-            evt = game.event()
-        else:
-            evt = game.get_event()
-        
-        result = _information(game)
-        result['event'] = evt
-        print("information:", result)
-    else:
-        result = _information(game)
+  if 'direction' in request.GET:
+      moved = False
+  
+      if request.GET['direction'] == 'left':
+          moved = game.move_left()
+      if request.GET['direction'] == 'right':
+          moved = game.move_right()
+      if request.GET['direction'] == 'down':
+          moved = game.move_down()
+      if request.GET['direction'] == 'up':
+          moved = game.move_up()
+      
+      if moved == True:
+          evt = game.event()
+      else:
+          evt = game.get_event()
+      
+      result = _information(game)
+      result['event'] = evt
+      print("information:", result)
+  else:
+      result = _information(game)
 
-    print("information1:", result)
+  up = '/worldmap?direction=up' if result['up'] else '/worldmap'
+  down = '/worldmap?direction=down' if result['down'] else '/worldmap'
+  left = '/worldmap?direction=left' if result['left'] else '/worldmap'
+  right = '/worldmap?direction=right' if result['right'] else '/worldmap'
 
-    up = '/worldmap?direction=up' if result['up'] else '/worldmap'
-    down = '/worldmap?direction=down' if result['down'] else '/worldmap'
-    left = '/worldmap?direction=left' if result['left'] else '/worldmap'
-    right = '/worldmap?direction=right' if result['right'] else '/worldmap'
+  player_yx = position(result['width'], result['position'])
 
-    player_yx = position(result['width'], result['position'])
+  a = ''
+  event_text =''
+  if result.get('event') and result['event'] == 1:
+      a = '/battle/' + result['info_event']['id'] + '?first=true'
+      event_text = "You encounter a moviemon [Push A for Battle]"
+  if result.get('event') and result['event'] == 2:
+      event_text = "You catch a movieball"
 
-    a = ''
-    event_text =''
-    if result.get('event') and result['event'] == 1:
-        a = '/battle/' + result['info_event']['id'] + '?first=true'
-        event_text = "You encounter a moviemon"
-    if result.get('event') and result['event'] == 2:
-        event_text = "You catch a movieball"
-
-    # get move possibility
-    context = {
-            'button': {
-                'a': a,
-                'start': '/moviedex',
-                'select': '/options',
-                'up': up,
-                'down': down,
-                'left': left,
-                'right': right
-            },
-            'grid': {
-                'x': range(1, result['width']),
-                'y': range(1, result['heigth'])
-            },
-            'player': {
-                'y': player_yx[0],
-                'x': player_yx[1],
-                'strength': result['strength'],
-                'movieballs': result['movieballs'],
-                'moviedex_nb': result['moviedex_nb']
-            },
-            'event': event_text
-        }
-    print(context)
-    _save_pickle(game)
-    return render(request, 'WorldMap.html', context)
+  # get move possibility
+  context = {
+          'button': {
+              'a': a,
+              'start': '/moviedex',
+              'select': '/options',
+              'up': up,
+              'down': down,
+              'left': left,
+              'right': right
+          },
+          'grid': {
+              'x': range(1, result['width']),
+              'y': range(1, result['heigth'])
+          },
+          'player': {
+              'y': player_yx[0],
+              'x': player_yx[1],
+              'strength': result['strength'],
+              'movieballs': result['movieballs'],
+              'moviedex_nb': result['moviedex_nb']
+          },
+          'event': event_text
+      }
+  
+  _save_pickle(game)
+  return render(request, 'WorldMap.html', context)
 
 
 def moviedex(request):
@@ -210,12 +201,7 @@ def moviedex(request):
       'left': prev,
       'right': suiv
     },
-    'data': {
-      'moviemon_id': movie if movie else None,
-    },
-    'event': {
-      'film': 'test'
-    }
+    'moviemon_id': movie if movie else None
   }
 
   _save_pickle(game)
@@ -226,24 +212,16 @@ def moviedex(request):
 def moviedex_id(request, id=None):
   game = _load_pickle()
 
-  result = _information(game)
+  context = _information(game)
 
   if id and game.isExisting(id) and game.isCatch(id) is True:
-    result['details'] = game.get_movie_id(id)
-    context = {
-        'button': {
-          'b': '/moviedex',
-        },
-        'data': {
-          'details': result['details'] if 'details' in result else None
-        },
-        'event': {
-          'film': 'test'
-        }
+    context['details'] = game.get_movie_id(id)
+
+    context['button'] = {
+      'b': '/moviedex'
     }
 
     _save_pickle(game)
-
     return render(request, 'MovieDex.html', context)
   raise Http404('Id not conform.')
 
@@ -267,7 +245,7 @@ def battle(request, id=None):
       }
     elif 'first' not in request.GET:
       catched = game.try_catch(id)
-      context['info_event']['text'] = 'Oui je l\'ai eu !!!' if catched == True else 'HAAA j\'ai louper mon coup'
+      context['info_event']['text'] = 'You catched it !!!' if catched == True else 'You missed !'
       context['button'] = {
         'a': '/worldmap' if catched == True else '/battle/' + id,
         'b': '/worldmap'
@@ -279,6 +257,7 @@ def battle(request, id=None):
         'b': '/worldmap'
       }
     
+    print(context['info_event']['rating'])
     _save_pickle(game)
 
     return render(request, 'Battle.html', context)
