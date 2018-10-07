@@ -7,19 +7,64 @@
   </head>
   <body>
     <a href="/worldmap">WORLDMAP</a>
+    <br>
+    <a href="/moviedex/">MOVIEDEX</a>
+
+    {% if moviedex %}
+    <table>
+      <tr>
+        <th>title</th>
+        <th>id</th>
+        <th>rating</th>
+        <th>released</th>
+        <th>duration</th>
+        <th>genre</th>
+        <th>director</th>
+      </tr>
+    
+      {% for d in moviedex %}
+      <tr>
+        <td><a href="/moviedex/{{d}}">{{d}}</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
 
 
+    {% if details %}
+    <h1>DETAILS</h1>
+
+    <p>{{ details.title }} </p>
+    <p>{{ details.id }} </p>
+    <p>{{ details.rating }} </p>
+    <p>{{ details.released }} </p>
+    <p>{{ details.duration }} </p>
+    <p>{{ details.genre }} </p>
+    <p>{{ details.director }} </p>
+    {% endif %}
+
+    
+    
     <h1>MOVE</h1>
-    <a href="/move&direction=left">LEFT</a>
-    <a href="/move&direction=rigth">RIGTH</a>
-    <a href="/move&direction=up">UP</a>
-    <a href="/move&direction=down">DOWN</a>
+    <a href="/move?direction=left">LEFT</a>
+    <a href="/move?direction=right">RIGHT</a>
+    <a href="/move?direction=up">UP</a>
+    <a href="/move?direction=down">DOWN</a>
     
     <h1>EVENT</h1>
     <p>{{event}}</p>
+    
+    <a href="/battle/{{info_event.id}}">CATCH</a>
+    <h1>INFORMATION MOVIEMON</h1>
+    <p>id: {{info_event.id}}</p>
+    <p>rating: {{info_event.rating}}</p>
+    <p>catched chance: {{info_event.catchedChance}}</p>
+    <p>catched: {{info_event.catched}}</p>
 
     <h1>INFORMATION</h1>
+    <p>strength: {{strength}}</p>
     <p>movieballs: {{movieballs}}</p>
+    <p>moviedex_nb: {{moviedex_nb}}</p>
     <p>position: {{position}}</p>
     <p>width: {{width}}</p>
     <p>heigth: {{heigth}}</p>
