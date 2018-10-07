@@ -1,10 +1,10 @@
-@import url(https://fonts.googleapis.com/css?family=Titillium+Web);
+
 @import url(https://fonts.googleapis.com/css?family=Karla);
 @import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,500italic);
 @import url(https://db.onlinewebfonts.com/c/487390d5558cff7a17ce35d7d92a0540?family=Pretendo);
 @import url('https://fonts.googleapis.com/css?family=Orbitron:500');
 
-
+@font-face { font-family: Pixel; src: url(gameboy.woff); } 
 
 @font-face {font-family: "pretendo";
 	src: url("https://db.onlinewebfonts.com/t/487390d5558cff7a17ce35d7d92a0540.eot");
@@ -812,11 +812,15 @@ label[for=check] {
 	top: 5%;
 }
 
+body {
+	font-family: Pixel;
+}
+
 .event_text_object {
 	position: absolute;
-	left: 0px;
-	top: 0px;
-	z-index: -1;
+	font-size: 0.7em;
+	top: 65%;
+	left: 5%;
 }
 
 .event_text_bottom {
@@ -824,6 +828,13 @@ label[for=check] {
 	left: 0px;
 	top: 0px;
 	z-index: -1;
+}
+
+.battle_movieball {
+	font-size: 0.3em;
+	position: absolute;
+	top: 55%;
+	left: 53%;
 }
 
 .flex-container {
@@ -838,7 +849,6 @@ label[for=check] {
 }
 
 .flex-item, .pikachu {
-	backgrounf
 	height: 1em;
 	text-align: center;
 	flex: 1 0 auto;
@@ -861,4 +871,8 @@ label[for=check] {
 	max-height: 100%;
 	width: auto;
 	height : auto;
+}
+
+.title {
+	font-size: 0.6em;
 }
