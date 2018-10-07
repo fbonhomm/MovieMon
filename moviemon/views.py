@@ -74,20 +74,12 @@ def init(request):
 def Option(request):
     context = {
             'button': {
-                'a': '/save',
+                'a': '/save_game',
                 'b': '/',
                 'start': '/worldmap',
             }
         }
     return render(request, 'Options.html', context)
-
-def Load():
-    game = Games()
-
-    with open(settings.BASE_SAVE + 'savefile', 'rb') as fd:
-        game.load(pickle.load(fd))
-
-    return game
 
 def TitleScreen(request):
     context = {
@@ -314,27 +306,54 @@ def save_game(request, slot=None):
   result['saves_route'] = 'save_game'
   save_pickle(game)
 
-  return render(request, 'index.html', result)
+  return render(request, 'Load.html', result)
 
 
 def load_game(request, slot=None):
-  game = load_pickle()
+    game = load_pickle()
 
-  if not os.path.exists(settings.BASE_SAVE):
-    os.makedirs(settings.BASE_SAVE)
+    if 'select' in request.GET:
+        select = request.GET['select']
+    else:
+        select = 'a'
+    
+    if not os.path.exists(settings.BASE_SAVE):
+      os.makedirs(settings.BASE_SAVE)
+    
+    list_dirs = os.listdir(settings.BASE_SAVE)
+    
+    if slot is not None and slot in ['a', 'b', 'c']:
+      for d in list_dirs:
+        if slot == d[4:5]:
+          with open(os.path.join(settings.BASE_SAVE, d), 'rb') as fd:
+            game.load(pickle.load(fd))
+            fd.close()
+    
+    # information on slots
+    result = _information_savefile(game)
+    result['saves_route'] = 'load_game'
+    print(result)
+    save_pickle(game)
 
-  list_dirs = os.listdir(settings.BASE_SAVE)
+    if select == 'a':
+        up = 'c'
+        down = chr(ord('a') + 1)
+    elif select == 'c':
+        up = chr(ord('c') - 1)
+        down = 'a'
+    else:
+        up = chr(ord(select) - 1)
+        down = chr(ord(select) + 1)
 
-  if slot is not None and slot in ['a', 'b', 'c']:
-    for d in list_dirs:
-      if slot == d[4:5]:
-        with open(os.path.join(settings.BASE_SAVE, d), 'rb') as fd:
-          game.load(pickle.load(fd))
-          fd.close()
-
-  # information on slots
-  result = _information_savefile(game)
-  result['saves_route'] = 'load_game'
-  save_pickle(game)
-
-  return render(request, 'index.html', result)
+    context = {
+            'button': {
+                'up': '/options/load_game/?select=' + up,
+                'down': '/options/load_game/?select=' + down,
+                'a': '/options/load_game/' + select if select else '',
+                'b': '/',
+                'start': '/worldmap',
+            },
+            'select': select,
+            'saves': result['saves']
+        }
+    return render(request, 'Load.html', context)

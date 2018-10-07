@@ -10,7 +10,6 @@ urlpatterns = [
 #    url(r'^Detail/', views.Detail, name='Detail'),
     url(r'^option/', views.Option, name='Option'),
 #    url(r'^save/', views.Save, name='Save'),
-    url(r'^load/', views.Load, name='Load'),
-  url(r'^options/save_game/((?P<slot>[\w-]+)$)?', views.save_game),
-  url(r'^options/load_game/((?P<slot>[\w-]+)$)?', views.load_game),
+    url(r'^options/save_game/((?P<slot>[\w-]+)$)?', views.save_game),
+    url(r'^options/load_game/((?P<slot>[\w-]+)$)?', views.load_game),
 ]
