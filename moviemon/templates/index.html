@@ -16,7 +16,7 @@
     <br>
     <a href="/worldmap">WORLDMAP</a>
     <br>
-    <a href="/moviedex/">MOVIEDEX</a>
+    <a href="/moviedex">MOVIEDEX</a>
 
     {% if saves %}
       {% for key, value in saves.items %}
@@ -40,7 +40,7 @@
     
       {% for d in moviedex %}
       <tr>
-        <td><a href="/moviedex/{{d}}">{{d}}</a></td>
+        <td><a href="/moviedex?id={{id}}">{{d}}</a></td>
       </tr>
       {% endfor %}
     </table>
@@ -70,7 +70,7 @@
     <h1>EVENT</h1>
     <p>{{event}}</p>
     
-    <a href="/battle/{{info_event.id}}">CATCH</a>
+    <a href="/battle/{{info_event.id}}?first=true">CATCH</a>
 
     {% if info_event %}
     <h1>INFORMATION MOVIEMON</h1>

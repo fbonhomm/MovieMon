@@ -6,7 +6,7 @@ from .movies import Movies
 from .map import Map
 from .players import Players
 
-# 0 = moviemon, 1 = movieballs, 2 = rien
+# 1 = moviemon, 2 = movieballs, 3 = rien
 EVENTS = [1, 2, 3]
 
 class Games(Movies, Map, Players):
@@ -22,7 +22,7 @@ class Games(Movies, Map, Players):
     self.moviedex = info['moviedex']
     Movies.__init__(self, movies=info['moviemon'])
     Map.__init__(self, settings.MAP_HEIGHT, settings.MAP_WIDTH, info['position'])
-    Players.__init__(self, len(self.moviedex) + 1, info['movieballs'])
+    Players.__init__(self, len(self.moviedex), info['movieballs'])
     return self
   
   def load_default_settings(self):
