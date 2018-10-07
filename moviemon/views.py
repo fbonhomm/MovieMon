@@ -289,6 +289,11 @@ def save_game(request, slot=None):
   game = _load_pickle()
   loaded = False
 
+  if 'select' in request.GET:
+    select = request.GET['select']
+  else:
+    select = 'a'
+
   if not os.path.exists(settings.BASE_SAVE):
     os.makedirs(settings.BASE_SAVE)
 
@@ -321,11 +326,33 @@ def save_game(request, slot=None):
   result['loaded'] = loaded
   _save_pickle(game)
 
-  return render(request, 'Load.html', result)
+  if select == 'a':
+    up = 'c'
+    down = chr(ord('a') + 1)
+  elif select == 'c':
+    up = chr(ord('c') - 1)
+    down = 'a'
+  else:
+    up = chr(ord(select) - 1)
+    down = chr(ord(select) + 1)
+
+  context = {
+    'button': {
+      'up': '/options/save_game/?select=' + up,
+      'down': '/options/save_game/?select=' + down,
+      'a': '/options/save_game/' + select if select else '',
+      'b': '/',
+      'start': '/worldmap',
+    },
+    'select': select,
+    'saves': result['saves']
+  }
+
+  return render(request, 'Save.html', context)
 
 
 def load_game(request, slot=None):
-    game = load_pickle()
+    game = _load_pickle()
     loaded = False
 
     if 'select' in request.GET:
@@ -362,14 +389,14 @@ def load_game(request, slot=None):
         down = chr(ord(select) + 1)
 
     context = {
-            'button': {
-                'up': '/options/load_game/?select=' + up,
-                'down': '/options/load_game/?select=' + down,
-                'a': '/options/load_game/' + select if select else '',
-                'b': '/',
-                'start': '/worldmap',
-            },
-            'select': select,
-            'saves': result['saves']
-        }
+      'button': {
+        'up': '/options/load_game/?select=' + up,
+        'down': '/options/load_game/?select=' + down,
+        'a': '/options/load_game/' + select if select else '',
+        'b': '/',
+        'start': '/worldmap',
+      },
+      'select': select,
+      'saves': result['saves']
+    }
     return render(request, 'Load.html', context)
