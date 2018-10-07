@@ -1,4 +1,3 @@
-
 import pickle
 
 from django.shortcuts import render
@@ -22,30 +21,49 @@ def init(request):
 
 def TitleScreen(request):
     context = {
-            'button': {
-                'a': '/WorldMap',
-                'b': '/load'
-            },
-            'event': {
-                'film': 'test'
-            }
+        'button': {
+            'a': '/worldmap',
+            'b': '/load',
+            'start': '/moviedex',
+            'select': '/option'
+        },
+        'event': {
+            'film': 'test'
+        }
     }
     return render(request, 'TitleScreen.html', context)
 
 def WorldMap(request):
+    game = Games()
+    game.load_default_settings()
+
+    result = game.get_map()
     pos_x = int(request.GET.get('x')) if request.GET.get('x') else 0
     pos_y = int(request.GET.get('y')) if request.GET.get('y') else 0
 
+#   code back here !!
+#   position = "60"
+#   pos_x = position.1
+#   pos_y = position.0
+    # if movieball is catch
+    # if moviemon appear
+    moviemon_id = None
 
-    up = '/WorldMap?x=%s&y=%s' % (str(pos_x), str(pos_y - 1))
-
-    down ='/WorldMap?x=%s&y=%s' % (str(pos_x), str(pos_y + 1))
-    left ='/WorldMap?x=%s&y=%s' % (str(pos_x - 1), str(pos_y))
-    right = '/WorldMap?x=%s&y=%s' % (str(pos_x + 1), str(pos_y))
+    if not result['up']:
+        up = '/WorldMap?x=%s&y=%s' % (str(pos_x), str(pos_y - 1))
+    if not result['down']:
+        down = '/WorldMap?x=%s&y=%s' % (str(pos_x), str(pos_y + 1))
+    if not result['left']:
+        left = '/WorldMap?x=%s&y=%s' % (str(pos_x - 1), str(pos_y))
+    if not result['right']:
+        right = '/WorldMap?x=%s&y=%s' % (str(pos_x + 1), str(pos_y))
 
     # get move possibility
     context = {
         'button': {
+            'a': '/battle/' + moviemon_id,
+            'start': '/moviedex',
+            'select': '/option',
             'up': up,
             'down': down,
             'left': left,
@@ -57,5 +75,21 @@ def WorldMap(request):
         },
         'player': (pos_y, pos_x)
     }
-    print(context)
     return render(request, 'WorldMap.html', context)
+
+def Battle(request, moviemon_id):
+    movieball = 10
+
+    context = {
+            'moviemon': {
+                'title': 'test',
+                'id': moviemon_id,
+            },
+            'player': {
+                'movieball': movieball
+            },
+            'event': {
+                'text': 'Moviemon has appear !!!'
+            }
+    }
+    return render(request, 'Battle.html', context)

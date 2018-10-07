@@ -2,9 +2,9 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^TitleScreen/', views.TitleScreen, name='TitleScreen'),
-    url(r'^WorldMap/', views.WorldMap, name='WordlMap'),
-#    url(r'^Battle/', views.Battle, name='Battle'),
+    url('/', views.TitleScreen, name='TitleScreen'),
+    url(r'^worldmap/$', views.WorldMap, name='WordlMap'),
+    url(r'^Battle/(?P<moviemon_id>[0-9]+)/$', views.Battle, name='Battle'),
 #    url(r'^Moviedex/', views.Moviedex, name='Moviedex'),
 #    url(r'^Detail/', views.Detail, name='Detail'),
 #    url(r'^Option/', views.Option, name='Option'),
