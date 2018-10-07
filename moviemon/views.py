@@ -195,9 +195,8 @@ def moviedex(request):
       'select': '/worldmap',
       'left': prev,
       'right': suiv
-    },
-    'moviemon_id': movie if movie else None
-  }
+    }
+    result['moviemon_id']: movie if movie else None
 
   _save_pickle(game)
 
@@ -362,11 +361,11 @@ def load_game(request, slot=None):
         down = chr(ord(select) + 1)
 
     result['button'] = {
-                'up': '/options/load_game/?select=' + up,
-                'down': '/options/load_game/?select=' + down,
-                'a': '/options/load_game/' + select if select else '',
-                'b': '/',
-                'start': '/worldmap',
-            }
-    result['select'] = select,
+      'up': '/options/load_game/?select=' + up,
+      'down': '/options/load_game/?select=' + down,
+      'a': ('/options/load_game/' + select if select else '') if loaded != True else '/worldmap',
+      'b': '/'
+    }
+    result['select'] = select
+
     return render(request, 'Load.html', result)
