@@ -84,20 +84,18 @@ def init(request):
 
 def options(request):
   
-  game = _load_pickle()
-
-  result = _information(game)
-  context = {
-          'button': {
+    game = _load_pickle()
+    
+    result = _information(game)
+    result['button'] = {
               'a': '/options/save_game/',
-              'b': '/',
-              'start': '/worldmap',
-          }
-      }
-  
-  _save_pickle(game)
-  
-  return render(request, 'Options.html', context)
+        'b': '/',
+        'start': '/worldmap',
+    }
+    
+    _save_pickle(game)
+    
+    return render(request, 'Options.html', result)
 
 
 def worldmap(request):
@@ -142,33 +140,31 @@ def worldmap(request):
       event_text = "You catch a movieball"
 
   # get move possibility
-  context = {
-          'button': {
-              'a': a,
-              'start': '/moviedex',
+  result['button'] = {
+      'a': a,
+      'start': '/moviedex',
               'select': '/options',
-              'up': up,
-              'down': down,
-              'left': left,
-              'right': right
-          },
-          'grid': {
+      'up': up,
+      'down': down,
+      'left': left,
+      'right': right
+  }
+  result['grid'] = {
               'x': range(1, result['width']),
               'y': range(1, result['heigth'])
-          },
-          'player': {
+          }
+
+  result['player'] = {
               'y': player_yx[0],
               'x': player_yx[1],
               'strength': result['strength'],
               'movieballs': result['movieballs'],
               'moviedex_nb': result['moviedex_nb']
-          },
-          'event': event_text
       }
-  
-  _save_pickle(game)
-  return render(request, 'WorldMap.html', context)
+  result['event'] = event_text
 
+  _save_pickle(game)
+  return render(request, 'WorldMap.html', result)
 
 def moviedex(request):
   game = _load_pickle()
@@ -194,8 +190,7 @@ def moviedex(request):
     prev = ''
     suiv = ('/moviedex?id=' + result['moviedex'][1:2][0]) if len(result['moviedex'][1:2]) > 0 else ''
 
-  context = {
-    'button': {
+    result['button'] = {
       'a': ('/moviedex/' + str(movie)) if movie is not None else '/moviedex',
       'select': '/worldmap',
       'left': prev,
@@ -206,7 +201,7 @@ def moviedex(request):
 
   _save_pickle(game)
 
-  return render(request, 'MovieDex.html', context)
+  return render(request, 'MovieDex.html', result)
 
 
 def moviedex_id(request, id=None):
@@ -366,14 +361,12 @@ def load_game(request, slot=None):
         up = chr(ord(select) - 1)
         down = chr(ord(select) + 1)
 
-    context = {
-      'button': {
-        'up': '/options/load_game/?select=' + up,
-        'down': '/options/load_game/?select=' + down,
-        'a': ('/options/load_game/' + select if select else '') if loaded != True else '/worldmap',
-        'b': '/'
-      },
-      'select': select,
-      'saves': result['saves']
-    }
-    return render(request, 'Load.html', context)
+    result['button'] = {
+                'up': '/options/load_game/?select=' + up,
+                'down': '/options/load_game/?select=' + down,
+                'a': '/options/load_game/' + select if select else '',
+                'b': '/',
+                'start': '/worldmap',
+            }
+    result['select'] = select,
+    return render(request, 'Load.html', result)
