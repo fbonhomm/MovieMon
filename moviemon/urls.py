@@ -2,12 +2,11 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.TitleScreen, name='TitleScreen'),
-    url(r'^worldmap/$', views.WorldMap, name='WordlMap'),
-    url(r'^battle/(?P<id>[\w-]+)$', views.Battle, name='Battle'),
-    url(r'^moviedex/((?P<id>[\w-]+)$)?', views.moviedex),
-#    url(r'^Moviedex/', views.Moviedex, name='Moviedex'),
-#    url(r'^Detail/', views.Detail, name='Detail'),
-#    url(r'^Option/', views.Option, name='Option'),
-#    url(r'^Save/', views.Save, name='Save'),
-#    url(r'^Load/', views.Load, name='Load')
+  url(r'^$', views.init),
+  url(r'^worldmap', views.worldmap),
+  url(r'^moviedex/((?P<id>[\w-]+)$)?', views.moviedex),
+  url(r'^battle/(?P<id>[\w-]+)$', views.battle),
+  url(r'^options$', views.options),
+  url(r'^options/save_game/((?P<slot>[\w-]+)$)?', views.save_game),
+  url(r'^options/load_game/((?P<slot>[\w-]+)$)?', views.load_game),
+]

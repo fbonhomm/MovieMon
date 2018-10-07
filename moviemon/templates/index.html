@@ -6,20 +6,36 @@
     <title>TEST</title>
   </head>
   <body>
+    <a href="/">TITLE SCREEN</a>
+    <br>
+    <a href="/options">OPTIONS</a>
+    <br>
+    <a href="/options/save_game/">SAVE_GAME</a>
+    <br>
+    <a href="/options/load_game/">LOAD_GAME</a>
+    <br>
     <a href="/worldmap">WORLDMAP</a>
     <br>
     <a href="/moviedex/">MOVIEDEX</a>
 
+    {% if saves %}
+      {% for key, value in saves.items %}
+        {% if value|length > 0 %}
+          <a href="/options/{{saves_route}}/{{key}}">
+            <p>Slot {{key}}: {{value.moviedex}}/{{value.moviemon}}</p>
+          </a>
+        {% else %}
+          <a href="/options/{{saves_route}}/{{key}}">
+            <p>Slot {{key}}: Free</p>
+          </a>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
     {% if moviedex %}
     <table>
       <tr>
-        <th>title</th>
         <th>id</th>
-        <th>rating</th>
-        <th>released</th>
-        <th>duration</th>
-        <th>genre</th>
-        <th>director</th>
       </tr>
     
       {% for d in moviedex %}
@@ -34,32 +50,35 @@
     {% if details %}
     <h1>DETAILS</h1>
 
-    <p>{{ details.title }} </p>
-    <p>{{ details.id }} </p>
-    <p>{{ details.rating }} </p>
-    <p>{{ details.released }} </p>
-    <p>{{ details.duration }} </p>
-    <p>{{ details.genre }} </p>
-    <p>{{ details.director }} </p>
+    <p>title: {{ details.title }} </p>
+    <p>id: {{ details.id }} </p>
+    <p>rating: {{ details.rating }} </p>
+    <p>released: {{ details.released }} </p>
+    <p>actors: {{ details.actors }} </p>
+    <p>director: {{ details.director }} </p>
+    <p>synopsis: {{ details.synopsis }} </p>
     {% endif %}
 
     
     
     <h1>MOVE</h1>
-    <a href="/move?direction=left">LEFT</a>
-    <a href="/move?direction=right">RIGHT</a>
-    <a href="/move?direction=up">UP</a>
-    <a href="/move?direction=down">DOWN</a>
+    <a href="/worldmap?direction=left">LEFT</a>
+    <a href="/worldmap?direction=right">RIGHT</a>
+    <a href="/worldmap?direction=up">UP</a>
+    <a href="/worldmap?direction=down">DOWN</a>
     
     <h1>EVENT</h1>
     <p>{{event}}</p>
     
     <a href="/battle/{{info_event.id}}">CATCH</a>
+
+    {% if info_event %}
     <h1>INFORMATION MOVIEMON</h1>
     <p>id: {{info_event.id}}</p>
     <p>rating: {{info_event.rating}}</p>
     <p>catched chance: {{info_event.catchedChance}}</p>
     <p>catched: {{info_event.catched}}</p>
+    {% endif %}
 
     <h1>INFORMATION</h1>
     <p>strength: {{strength}}</p>
