@@ -83,14 +83,13 @@ def init(request):
     }
     return render(request, 'TitleScreen.html', result)
 
-
 def options(request):
   
     game = _load_pickle()
     
     result = _information(game)
     result['button'] = {
-        'a': '/save_game',
+              'a': '/options/save_game/',
         'b': '/',
         'start': '/worldmap',
     }
@@ -122,6 +121,7 @@ def worldmap(request):
         
         result = _information(game)
         result['event'] = evt
+        print("information:", result)
     else:
         result = _information(game)
 
@@ -146,7 +146,7 @@ def worldmap(request):
     result['button'] = {
         'a': a,
         'start': '/moviedex',
-        'select': '/option',
+                'select': '/options',
         'up': up,
         'down': down,
         'left': left,
@@ -164,12 +164,10 @@ def worldmap(request):
                 'movieballs': result['movieballs'],
                 'moviedex_nb': result['moviedex_nb']
         }
-
     result['event'] = event_text
 
     _save_pickle(game)
     return render(request, 'WorldMap.html', result)
-
 
 def moviedex(request):
   game = _load_pickle()
@@ -271,6 +269,11 @@ def save_game(request, slot=None):
   game = _load_pickle()
   loaded = False
 
+  if 'select' in request.GET:
+    select = request.GET['select']
+  else:
+    select = 'a'
+
   if not os.path.exists(settings.BASE_SAVE):
     os.makedirs(settings.BASE_SAVE)
 
@@ -303,11 +306,33 @@ def save_game(request, slot=None):
   result['loaded'] = loaded
   _save_pickle(game)
 
-  return render(request, 'Load.html', result)
+  if select == 'a':
+    up = 'c'
+    down = chr(ord('a') + 1)
+  elif select == 'c':
+    up = chr(ord('c') - 1)
+    down = 'a'
+  else:
+    up = chr(ord(select) - 1)
+    down = chr(ord(select) + 1)
+
+  context = {
+    'button': {
+      'up': '/options/save_game/?select=' + up,
+      'down': '/options/save_game/?select=' + down,
+      'a': '/options/save_game/' + select if select else '',
+      'b': '/',
+      'start': '/worldmap',
+    },
+    'select': select,
+    'saves': result['saves']
+  }
+
+  return render(request, 'Save.html', context)
 
 
 def load_game(request, slot=None):
-    game = load_pickle()
+    game = _load_pickle()
     loaded = False
 
     if 'select' in request.GET:
