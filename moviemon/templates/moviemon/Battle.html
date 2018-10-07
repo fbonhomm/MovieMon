@@ -3,20 +3,19 @@
 {% load static %}
 
 {% block inside_screen %}
-<img height="100%" width="100%" src="{% static 'images/base.jpg' %}">
+  <img height="100%" width="100%" src="{% static 'images/base.jpg' %}">
 
-	{% if moviemon %}
+	{% if info_event %}
 		<div class="event_object">
-			<img height="100%" width="100%" src="/static/images/{{ moviemon.id }}.jpg">
+			<img height="100%" width="100%" src="/static/images/{{ info_event.id }}.jpg">
 		</div>
+
+    {% if info_event.text %}
+      <p class="event_text_object">{{ info_event.text }}</p>
+    {% endif %}
 	{% endif %}
 
-	{% if event.text %}
-		<p class="event_text_object">{{ event.text }}</p>
-	{% endif %}
 
-	<p class="battle_movieball">movieball: {{ player.movieball}}</p>
-	{% if event.text_item %}
-	{% endif %}
+	<p class="battle_movieball">movieball: {{ movieballs }}</p>
 
 {% endblock %}
