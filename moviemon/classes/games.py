@@ -7,7 +7,7 @@ from .map import Map
 from .players import Players
 
 # 0 = moviemon, 1 = movieballs, 2 = rien
-EVENTS = [0, 1, 2]
+EVENTS = [1, 2, 3]
 
 class Games(Movies, Map, Players):
 
@@ -113,12 +113,12 @@ class Games(Movies, Map, Players):
     return self.event_current
   
   def get_info_event(self):
-    if self.event_current == 0:
+    if self.event_current == 1:
       id = self.get_random_movie()
 
       result = self.get_movie_id(id)
       result['catchedChance'] = self.chance_catch(id)
-    elif self.event_current == 1:
+    elif self.event_current == 2:
       self.movieballs_up()
       result = {}
     else:
