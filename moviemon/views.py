@@ -90,7 +90,7 @@ def options(request):
     
     result = _information(game)
     result['button'] = {
-        'a': '/save_game',
+        'a': '/options/save_game/',
         'b': '/',
         'start': '/worldmap',
     }
@@ -265,6 +265,11 @@ def save_game(request, slot=None):
   game = _load_pickle()
   loaded = False
 
+  if 'select' in request.GET:
+    select = request.GET['select']
+  else:
+    select = 'a'
+
   if not os.path.exists(settings.BASE_SAVE):
     os.makedirs(settings.BASE_SAVE)
 
@@ -322,7 +327,7 @@ def save_game(request, slot=None):
 
 
 def load_game(request, slot=None):
-    game = load_pickle()
+    game = _load_pickle()
     loaded = False
 
     if 'select' in request.GET:
