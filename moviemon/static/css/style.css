@@ -830,6 +830,29 @@ body {
 	z-index: -1;
 }
 
+.map_info_player {
+	width: 100%;
+	height: 50%;
+	font-size: 0.3em;
+	position: absolute;
+	top: 1%;
+	left: 50%;
+	z-index: 10;
+	opacity: 0.7;
+}
+
+.map_event {
+	width: 100%;
+	height: 50%;
+	font-size: 0.4em;
+	position: absolute;
+	top: 90%;
+	text-align: center;
+	left: 1%;
+	z-index: 10;
+	opacity: 0.5;
+}
+
 .battle_movieball {
 	font-size: 0.3em;
 	position: absolute;
@@ -849,11 +872,9 @@ body {
 }
 
 .flex-item, .pikachu {
-	height: 1em;
 	text-align: center;
 	flex: 1 0 auto;
-	height:100%;
-	height:100%;
+	z-index: 10;
 	border: 1px solid black;
 	background-size: contain;
 }
@@ -875,4 +896,11 @@ body {
 
 .title {
 	font-size: 0.6em;
+}
+
+.highlight {
+	z-index: 10;
+	width: 100%;
+	height : 100%;
+	background-color: #999;
 }
