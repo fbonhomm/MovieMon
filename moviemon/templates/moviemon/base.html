@@ -1,0 +1,55 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% block style %}
+		<link rel="stylesheet" href="{% static 'css/style.css' %}" type='text/css' />
+		{% endblock %}
+		<title>MovieMon</title>
+	</head>
+
+	<body>
+		<div id="gameboy">
+			<div class="background">
+				<div class="top">
+					<div class="check-on">
+						<div class="off-on">
+							OFF . ON
+						</div>
+					</div>
+				</div>
+				<input type="checkbox" class="check" id="check">
+				<label for="check"></label>
+				<div class="bootup">Nintendo<sup>Ⓡ</sup></div>
+				{% block screen %} {% endblock %}
+				<div class="screen_text">DOT MATRIX WITH STEREO SOUND</div>
+				<div class="brand">GAME BOY</div>
+				<div class="controller"></div>
+				<!--<div class="controller_effect"></div>-->
+				<a href={{ button.down }}><div class="arrow_b"></div></a>
+				<a href={{ button.right }}><div class="arrow_l"></div></a>
+				<a href={{ button.left }}><div class="arrow_r"></div></a>
+				<a href={{ button.up }}><div class="arrow_h"></div></a>
+				<div id="ab">
+					<a href={{ button.a }}><div id="a"></div></a>
+					<a href={{ button.b }}><div id="b"></div></a>
+				</div>
+				<a href={{ button.select }}><div class="select"></div></a>
+				<a href={{ button.bottom }}><div class="start"></div></a>
+				<ul id="speakers">
+					<li><li><li><li><li><li>
+				</ul>
+				<div class="phones">
+					<div class="headphones"></div>
+					PHONES
+					<ul class="strip-phones">
+						<li class="strip"></li>
+						<li class="strip"></li>
+						<li class="strip"></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
