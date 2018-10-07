@@ -6,20 +6,28 @@ from .movies import Movies
 from .map import Map
 from .players import Players
 
+# 0 = moviemon, 1 = movieballs, 2 = rien
+EVENTS = [0, 1, 2]
 
 class Games(Movies, Map, Players):
 
   def __init__(self):
+    self.event_current = None
     self.moviedex = list()
     Map.__init__(self, settings.MAP_HEIGHT,
                  settings.MAP_WIDTH, settings.MAP_POSITION)
     Players.__init__(self)
 
   def load(self, info):
-    self.moviedex = info.moviedex
-    Movies.__init__(self, movies=info.moviemon)
-    Map.__init__(self, settings.MAP_HEIGHT, settings.MAP_WIDTH, info.position)
-    Players.__init__(self, len(self.moviedex) + 1, info.movieballs)
+    self.moviedex = info['moviedex']
+    Movies.__init__(self, movies=info['moviemon'])
+    Map.__init__(self, settings.MAP_HEIGHT, settings.MAP_WIDTH, info['position'])
+    Players.__init__(self, len(self.moviedex) + 1, info['movieballs'])
+    return self
+  
+  def load_default_settings(self):
+    Movies.__init__(self, settings.MOVIES, settings.BASE_IMG)
+
     return self
 
   def dump(self):
@@ -30,30 +38,51 @@ class Games(Movies, Map, Players):
       'moviemon': self.movies
     }
 
+  def get_moviedex(self):
+    return self.moviedex
+  
+  def get_moviedex_full(self):
+    result = list()
+
+    for m in self.moviedex:
+      result.append(self.movies[m])
+
+    return result
+
   def get_random_movie(self):
     notCatch = list()
 
-    for id in self.ids:
+    for id in self.movies:
       if id not in self.moviedex:
         notCatch.append(id)
 
     return notCatch[random.randint(0, len(notCatch) - 1)]
-
-  def load_default_settings(self):
-    Movies.__init__(self, settings.MOVIES, settings.BASE_IMG)
-
-    return self
-
-  def get_strength(self):
-    return len(self.moviedex)
   
   def set_catched(self, id):
     if id in self.movies:
       self.moviedex.append(id)
 
+  def try_catch(self, id):
+    if id is not self.moviedex and self.get_movieballs() > 0:
+      self.movieballs_down()
+
+      chance = self.chance_catch(id)
+
+      rand = random.randint(0, 100)
+
+      if rand <= chance:
+        self.set_catched(id)
+        return True
+    
+    return False
+      
+
   def chance_catch(self, id):
     if id in self.movies:
-      rating = float(self.movies[id]['rating'])
+      try:
+        rating = float(self.movies[id]['rating'])
+      except Exception:
+        rating = 5
 
       chance = 50 - (rating * 10) + (self.strength * 5)
 
@@ -72,8 +101,34 @@ class Games(Movies, Map, Players):
     idx = random.randint(0, 100)
 
     if idx >= 0 and idx <= 24:
-      return 'moviemon'
+      self.event_current = EVENTS[0]
     elif idx >= 25 and idx <= 49:
-      return 'movieball'
+      self.event_current = EVENTS[1]
     else:
-      return 'rien'
+      self.event_current = EVENTS[2]
+
+    return self.event_current
+  
+  def get_event(self):
+    return self.event_current
+  
+  def get_info_event(self):
+    if self.event_current == 0:
+      id = self.get_random_movie()
+
+      result = self.get_movie_id(id)
+      result['catchedChance'] = self.chance_catch(id)
+    elif self.event_current == 1:
+      self.movieballs_up()
+      result = {}
+    else:
+      result = {}
+
+    return result
+
+  def isCatch(self, id):
+    if id in self.moviedex:
+      return True
+    else:
+      return False
+

@@ -11,9 +11,8 @@ class Movies:
       self.movies = movies
     else:
       self.movies = dict()
-      self.ids = ids
 
-      for m in self.ids:
+      for m in ids:
         self.movies[m] = dict()
 
         # download information for the movie
@@ -32,6 +31,7 @@ class Movies:
               self.movies[m]['image'] = True
 
         # retrieve information
+        self.movies[m]['id'] = m
         self.movies[m]['title'] = result['Title']
         self.movies[m]['rating'] = result['imdbRating']
         self.movies[m]['released'] = result['Released']
@@ -39,8 +39,17 @@ class Movies:
         self.movies[m]['genre'] = result['Genre']
         self.movies[m]['director'] = result['Director']
 
+  def isExisting(self, id):
+    if id in self.movies:
+      return True
+    else:
+      return False
+  
   def get_movie(self):
     return self.movies
+  
+  def get_movie_id(self, id):
+    return self.movies[id]
 
   def get_image_movie(self, id):
     if id in self.movies:

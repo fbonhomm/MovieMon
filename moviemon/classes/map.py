@@ -31,19 +31,27 @@ class Map:
   def move_up(self):
     if (self.current_case - self.w_case) >= 1:
       self.current_case -= self.w_case
-    return self.current_case
+      return True
+    else:
+      return False
   
   def move_down(self):
     if (self.current_case + self.w_case) <= (self.w_case * self.h_case):
       self.current_case += self.w_case
-    return self.current_case
+      return True
+    else:
+      return False
   
   def move_left(self):
     if (self.current_case - 1) % self.w_case != 0:
       self.current_case -= 1
-    return self.current_case
+      return True
+    else:
+      return False
   
   def move_right(self):
     if self.current_case % self.w_case != 0:
       self.current_case += 1
-    return self.current_case
+      return True
+    else:
+      return False
