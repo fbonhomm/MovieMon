@@ -69,20 +69,19 @@ def _save_pickle(game):
 
 # -------------- PUBLIC --------------
 def init(request):
-    game = Games()
-    game.load_default_settings()
-    
-    result = _information(game)
-    
-    _save_pickle(game)
-  
-    result['button'] = {
-        'a': '/worldmap',
-        'b': '/load',
-        'start': '/moviedex',
-        'select': '/option'
+  game = Games()
+  game.load_default_settings()
+
+  context = {
+    'button': {
+      'a': '/worldmap',
+      'b': '/options/load_game/'
     }
-    return render(request, 'TitleScreen.html', result)
+  }
+
+  _save_pickle(game)
+  return render(request, 'TitleScreen.html', context)
+
 
 
 def options(request):
@@ -102,72 +101,72 @@ def options(request):
 
 
 def worldmap(request):
-    game = _load_pickle()
+  game = _load_pickle()
 
-    if 'direction' in request.GET:
-        moved = False
-    
-        if request.GET['direction'] == 'left':
-            moved = game.move_left()
-        if request.GET['direction'] == 'right':
-            moved = game.move_right()
-        if request.GET['direction'] == 'down':
-            moved = game.move_down()
-        if request.GET['direction'] == 'up':
-            moved = game.move_up()
-        
-        if moved == True:
-            evt = game.event()
-        else:
-            evt = game.get_event()
-        
-        result = _information(game)
-        result['event'] = evt
-    else:
-        result = _information(game)
+  if 'direction' in request.GET:
+      moved = False
+  
+      if request.GET['direction'] == 'left':
+          moved = game.move_left()
+      if request.GET['direction'] == 'right':
+          moved = game.move_right()
+      if request.GET['direction'] == 'down':
+          moved = game.move_down()
+      if request.GET['direction'] == 'up':
+          moved = game.move_up()
+      
+      if moved == True:
+          evt = game.event()
+      else:
+          evt = game.get_event()
+      
+      result = _information(game)
+      result['event'] = evt
+      print("information:", result)
+  else:
+      result = _information(game)
 
-    up = '/worldmap?direction=up' if result['up'] else '/worldmap'
-    down = '/worldmap?direction=down' if result['down'] else '/worldmap'
-    left = '/worldmap?direction=left' if result['left'] else '/worldmap'
-    right = '/worldmap?direction=right' if result['right'] else '/worldmap'
+  up = '/worldmap?direction=up' if result['up'] else '/worldmap'
+  down = '/worldmap?direction=down' if result['down'] else '/worldmap'
+  left = '/worldmap?direction=left' if result['left'] else '/worldmap'
+  right = '/worldmap?direction=right' if result['right'] else '/worldmap'
 
-    player_yx = position(result['width'], result['position'])
+  player_yx = position(result['width'], result['position'])
 
-    a = ''
-    event_text =''
-    if result.get('event') and result['event'] == 1:
-        a = '/battle/' + result['info_event']['id'] + '?first=true'
-        event_text = "You encounter a moviemon"
-    if result.get('event') and result['event'] == 2:
-        event_text = "You catch a movieball"
+  a = ''
+  event_text =''
+  if result.get('event') and result['event'] == 1:
+      a = '/battle/' + result['info_event']['id'] + '?first=true'
+      event_text = "You encounter a moviemon [Push A for Battle]"
+  if result.get('event') and result['event'] == 2:
+      event_text = "You catch a movieball"
 
-    # get move possibility
-    result['button'] = {
-        'a': a,
-        'start': '/moviedex',
-        'select': '/option',
-        'up': up,
-        'down': down,
-        'left': left,
-        'right': right
-    }
-    result['grid'] = {
-                'x': range(1, result['width'] + 1),
-                'y': range(1, result['heigth'] + 1)
-            }
+  # get move possibility
+  result['button'] = {
+      'a': a,
+      'start': '/moviedex',
+              'select': '/options',
+      'up': up,
+      'down': down,
+      'left': left,
+      'right': right
+  }
+  result['grid'] = {
+              'x': range(1, result['width'] + 1),
+              'y': range(1, result['heigth'] + 1)
+          }
 
-    result['player'] = {
-                'y': player_yx[0],
-                'x': player_yx[1],
-                'strength': result['strength'],
-                'movieballs': result['movieballs'],
-                'moviedex_nb': result['moviedex_nb']
-        }
+  result['player'] = {
+              'y': player_yx[0],
+              'x': player_yx[1],
+              'strength': result['strength'],
+              'movieballs': result['movieballs'],
+              'moviedex_nb': result['moviedex_nb']
+      }
+  result['event'] = event_text
 
-    result['event'] = event_text
-
-    _save_pickle(game)
-    return render(request, 'WorldMap.html', result)
+  _save_pickle(game)
+  return render(request, 'WorldMap.html', result)
 
 
 def moviedex(request):
@@ -200,9 +199,7 @@ def moviedex(request):
       'left': prev,
       'right': suiv
     }
-    result['data'] = {
-      'moviemon_id': movie if movie else None,
-    }
+    result['moviemon_id']: movie if movie else None
 
   _save_pickle(game)
 
@@ -210,23 +207,20 @@ def moviedex(request):
 
 
 def moviedex_id(request, id=None):
-    game = _load_pickle()
-    
-    result = _information(game)
-    
-    if id and game.isExisting(id) and game.isCatch(id) is True:
-        result['details'] = game.get_movie_id(id)
-        result['button'] = {
-              'b': '/moviedex',
-            }
-        result['data'] = {
-              'details': result['details'] if 'details' in result else None
-            }
-        
-        _save_pickle(game)
-        
-        return render(request, 'MovieDex.html', result)
-    raise Http404('Id not conform.')
+  game = _load_pickle()
+
+  context = _information(game)
+
+  if id and game.isExisting(id) and game.isCatch(id) is True:
+    context['details'] = game.get_movie_id(id)
+
+    context['button'] = {
+      'b': '/moviedex'
+    }
+
+    _save_pickle(game)
+    return render(request, 'MovieDex.html', context)
+  raise Http404('Id not conform.')
 
 
 def battle(request, id=None):
@@ -248,7 +242,7 @@ def battle(request, id=None):
       }
     elif 'first' not in request.GET:
       catched = game.try_catch(id)
-      context['info_event']['text'] = 'Oui je l\'ai eu !!!' if catched == True else 'HAAA j\'ai louper mon coup'
+      context['info_event']['text'] = 'You catched it !!!' if catched == True else 'You missed !'
       context['button'] = {
         'a': '/worldmap' if catched == True else '/battle/' + id,
         'b': '/worldmap'
@@ -260,6 +254,7 @@ def battle(request, id=None):
         'b': '/worldmap'
       }
     
+    print(context['info_event']['rating'])
     _save_pickle(game)
 
     return render(request, 'Battle.html', context)
@@ -302,7 +297,28 @@ def save_game(request, slot=None):
   result['loaded'] = loaded
   _save_pickle(game)
 
-  return render(request, 'Load.html', result)
+  if select == 'a':
+    up = 'c'
+    down = chr(ord('a') + 1)
+  elif select == 'c':
+    up = chr(ord('c') - 1)
+    down = 'a'
+  else:
+    up = chr(ord(select) - 1)
+    down = chr(ord(select) + 1)
+
+  context = {
+    'button': {
+      'up': '/options/save_game/?select=' + up,
+      'down': '/options/save_game/?select=' + down,
+      'a': '/options/save_game/' + select if select else '',
+      'b': '/options'
+    },
+    'select': select,
+    'saves': result['saves']
+  }
+
+  return render(request, 'Save.html', context)
 
 
 def load_game(request, slot=None):
@@ -343,11 +359,11 @@ def load_game(request, slot=None):
         down = chr(ord(select) + 1)
 
     result['button'] = {
-                'up': '/options/load_game/?select=' + up,
-                'down': '/options/load_game/?select=' + down,
-                'a': '/options/load_game/' + select if select else '',
-                'b': '/',
-                'start': '/worldmap',
-            }
-    result['select'] = select,
+      'up': '/options/load_game/?select=' + up,
+      'down': '/options/load_game/?select=' + down,
+      'a': ('/options/load_game/' + select if select else '') if loaded != True else '/worldmap',
+      'b': '/'
+    }
+    result['select'] = select
+
     return render(request, 'Load.html', result)
