@@ -341,8 +341,7 @@ def save_game(request, slot=None):
       'up': '/options/save_game/?select=' + up,
       'down': '/options/save_game/?select=' + down,
       'a': '/options/save_game/' + select if select else '',
-      'b': '/',
-      'start': '/worldmap',
+      'b': '/options'
     },
     'select': select,
     'saves': result['saves']
@@ -392,9 +391,8 @@ def load_game(request, slot=None):
       'button': {
         'up': '/options/load_game/?select=' + up,
         'down': '/options/load_game/?select=' + down,
-        'a': '/options/load_game/' + select if select else '',
-        'b': '/',
-        'start': '/worldmap',
+        'a': ('/options/load_game/' + select if select else '') if loaded != True else '/worldmap',
+        'b': '/'
       },
       'select': select,
       'saves': result['saves']
