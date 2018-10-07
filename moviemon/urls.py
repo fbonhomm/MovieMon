@@ -6,8 +6,10 @@ from moviemon import views
 
 urlpatterns = [
   url(r'^$', views.init),
-  url(r'^move', views.move),
-  re_path(r'^worldmap', views.worldmap),
-  re_path(r'^moviedex/((?P<id>[\w-]+)$)?', views.moviedex),
-  re_path(r'^battle/(?P<id>[\w-]+)$', views.battle),
+  url(r'^worldmap', views.worldmap),
+  url(r'^moviedex/((?P<id>[\w-]+)$)?', views.moviedex),
+  url(r'^battle/(?P<id>[\w-]+)$', views.battle),
+  url(r'^options$', views.options),
+  url(r'^options/save_game/((?P<slot>[\w-]+)$)?', views.save_game),
+  url(r'^options/load_game/((?P<slot>[\w-]+)$)?', views.load_game),
 ]

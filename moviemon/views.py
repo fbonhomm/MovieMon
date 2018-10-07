@@ -1,4 +1,5 @@
 
+import os
 import pickle
 
 from django.shortcuts import render
@@ -6,6 +7,24 @@ from django.conf import settings
 from django.http import HttpResponse
 
 from .classes.games import Games
+
+
+def _information_savefile(game):
+  result = _information(game)
+  result['saves'] = {'a': {}, 'b': {}, 'c': {}}
+  list_dirs = os.listdir(settings.BASE_SAVE)
+
+  for d in list_dirs:
+    with open(settings.BASE_SAVE + d, 'rb') as fd:
+      file = pickle.load(fd)
+
+      result['saves'][file['name']] = {
+          'moviedex': len(file['moviedex']),
+          'moviemon': len(file['moviemon']),
+      }
+
+      fd.close()
+  return result
 
 
 def _information(game, id=None):
@@ -25,14 +44,16 @@ def _information(game, id=None):
 def load_pickle():
   game = Games()
 
-  with open(settings.BASE_SAVE + 'savefile', 'rb') as fd:
+  with open(settings.BASE_TMP + 'savefile', 'rb') as fd:
     game.load(pickle.load(fd))
+    fd.close()
 
   return game
 
 def save_pickle(game):
-  with open(settings.BASE_SAVE + 'savefile', 'wb') as fd:
+  with open(settings.BASE_TMP + 'savefile', 'wb') as fd:
     pickle.dump(game.dump(), fd)
+    fd.close()
 
 
 def init(request):
@@ -41,14 +62,15 @@ def init(request):
 
   result = _information(game)
 
-  with open(settings.BASE_SAVE + 'savefile', 'wb') as fd:
-    pickle.dump(game.dump(), fd)
+  save_pickle(game)
 
   return render(request, 'index.html', result)
 
 
-def move(request):
+def worldmap(request):
   game = load_pickle()
+
+  result = _information(game)
 
   if 'direction' in request.GET:
     moved = False
@@ -70,17 +92,6 @@ def move(request):
 
     result = _information(game)
     result['event'] = evt
-
-    save_pickle(game)
-
-    return render(request, 'index.html', result)
-  return HttpResponse('Direction not set.')
-
-
-def worldmap(request):
-  game = load_pickle()
-
-  result = _information(game)
 
   save_pickle(game)
 
@@ -115,3 +126,62 @@ def battle(request, id):
 
     return render(request, 'index.html', result)
   return HttpResponse('Id not conform.')
+
+
+def options(request):
+  return HttpResponse('OK')
+
+
+def save_game(request, slot=None):
+  game = load_pickle()
+
+  if not os.path.exists(settings.BASE_SAVE):
+    os.makedirs(settings.BASE_SAVE)
+
+  list_dirs = os.listdir(settings.BASE_SAVE)
+
+  if slot is not None and slot in ['a', 'b', 'c']:
+    nb_moviedex = len(game.get_moviedex())
+    nb_moviemon = len(game.get_movie())
+    new_name = settings.BASE_SAVE + 'slot' + slot + \
+        '_' + str(nb_moviedex) + '_' + str(nb_moviemon)
+
+    for d in list_dirs:
+      if slot == d[4:5]:
+        os.rename(settings.BASE_SAVE + d, new_name)
+
+    with open(new_name, 'wb') as fd:
+      result = game.dump()
+      result['name'] = slot
+      pickle.dump(result, fd)
+      fd.close()
+
+  # information on slots
+  result = _information_savefile(game)
+  result['saves_route'] = 'save_game'
+  save_pickle(game)
+
+  return render(request, 'index.html', result)
+
+
+def load_game(request, slot=None):
+  game = load_pickle()
+
+  if not os.path.exists(settings.BASE_SAVE):
+    os.makedirs(settings.BASE_SAVE)
+
+  list_dirs = os.listdir(settings.BASE_SAVE)
+
+  if slot is not None and slot in ['a', 'b', 'c']:
+    for d in list_dirs:
+      if slot == d[4:5]:
+        with open(os.path.join(settings.BASE_SAVE, d), 'rb') as fd:
+          game.load(pickle.load(fd))
+          fd.close()
+
+  # information on slots
+  result = _information_savefile(game)
+  result['saves_route'] = 'load_game'
+  save_pickle(game)
+
+  return render(request, 'index.html', result)
