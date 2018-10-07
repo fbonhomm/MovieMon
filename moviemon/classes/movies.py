@@ -35,9 +35,9 @@ class Movies:
         self.movies[m]['title'] = result['Title']
         self.movies[m]['rating'] = result['imdbRating']
         self.movies[m]['released'] = result['Released']
-        self.movies[m]['duration'] = result['Runtime']
-        self.movies[m]['genre'] = result['Genre']
+        self.movies[m]['actors'] = result['Actors']
         self.movies[m]['director'] = result['Director']
+        self.movies[m]['synopsis'] = result['Plot']
 
   def isExisting(self, id):
     if id in self.movies:
