@@ -1,0 +1,27 @@
+{% extends "screen.html" %}
+
+{% load static %}
+
+{% block inside_screen %}
+<center><h4>Load</h4></center>
+<div style="font-size: 0.6em;">
+	<table>
+	{% for key, value in saves.items %}
+	<tr>
+		{% if value|length > 0 %}
+			{% if key == select %}
+				<td class="highlight">Save {{ key|upper }}: {{ value.moviedex }} / {{ value.moviemon }}<td>
+			{% else %}
+				<td>Save {{ key|upper }}: {{ value.moviedex }} / {{ value.moviemon }}</td>
+			{% endif %}
+		{% else %}
+			<td>Save : Free</td>
+		{% endif %}
+	</tr>
+	{% endfor %}
+	</table>
+</div>
+<p class="title">A: Load game</p>
+<p class="title">B: Cancel</p>
+{% endblock %}
+
