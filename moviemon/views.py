@@ -12,7 +12,7 @@ from .classes.games import Games
 def position(width, position):
     pos = int(position / width)
     if position % width == 0:
-        pos1 = width 
+        pos1 = width
     else:
         pos1 = int(position % width)
         pos += 1
@@ -85,18 +85,18 @@ def init(request):
 
 
 def options(request):
-  
+
     game = _load_pickle()
-    
+
     result = _information(game)
     result['button'] = {
         'a': '/options/save_game/',
         'b': '/',
         'start': '/worldmap',
     }
-    
+
     _save_pickle(game)
-    
+
     return render(request, 'Options.html', result)
 
 
@@ -105,7 +105,7 @@ def worldmap(request):
 
   if 'direction' in request.GET:
       moved = False
-  
+
       if request.GET['direction'] == 'left':
           moved = game.move_left()
       if request.GET['direction'] == 'right':
@@ -114,12 +114,12 @@ def worldmap(request):
           moved = game.move_down()
       if request.GET['direction'] == 'up':
           moved = game.move_up()
-      
+
       if moved == True:
           evt = game.event()
       else:
           evt = game.get_event()
-      
+
       result = _information(game)
       result['event'] = evt
       print("information:", result)
@@ -178,7 +178,7 @@ def moviedex(request):
   id = request.GET['id'] if 'id' in request.GET else None
   result['moviedex'] = game.get_moviedex()
 
-  if (id and game.isExisting(id) == False) or (id and game.isCatch(id) == False):
+  if (id is not None and game.isExisting(id) == False) or (id and game.isCatch(id) == False):
     raise Http404('Id not conform.')
 
   if id is not None:
@@ -193,16 +193,15 @@ def moviedex(request):
     prev = ''
     suiv = ('/moviedex?id=' + result['moviedex'][1:2][0]) if len(result['moviedex'][1:2]) > 0 else ''
 
-    result['button'] = {
-      'a': ('/moviedex/' + str(movie)) if movie is not None else '/moviedex',
-      'select': '/worldmap',
-      'left': prev,
-      'right': suiv
-    }
-    result['moviemon_id']: movie if movie else None
+  result['button'] = {
+    'a': ('/moviedex/' + str(movie)) if movie is not None else '/moviedex',
+    'select': '/worldmap',
+    'left': prev,
+    'right': suiv
+  }
+  result['moviemon_id'] = movie
 
   _save_pickle(game)
-
   return render(request, 'MovieDex.html', result)
 
 
@@ -211,7 +210,7 @@ def moviedex_id(request, id=None):
 
   context = _information(game)
 
-  if id and game.isExisting(id) and game.isCatch(id) is True:
+  if id is not None and game.isExisting(id) and game.isCatch(id) is True:
     context['details'] = game.get_movie_id(id)
 
     context['button'] = {
@@ -253,7 +252,7 @@ def battle(request, id=None):
         'a': '/battle/' + id,
         'b': '/worldmap'
       }
-    
+
     print(context['info_event']['rating'])
     _save_pickle(game)
 
@@ -294,7 +293,7 @@ def save_game(request, slot=None):
       pickle.dump(result, fd)
       fd.close()
       loaded = True
-    
+
 
   # information on slots
   result = _information_savefile(game)
@@ -334,12 +333,12 @@ def load_game(request, slot=None):
         select = request.GET['select']
     else:
         select = 'a'
-    
+
     if not os.path.exists(settings.BASE_SAVE):
       os.makedirs(settings.BASE_SAVE)
-    
+
     list_dirs = os.listdir(settings.BASE_SAVE)
-    
+
     if slot is not None and slot in ['a', 'b', 'c']:
       for d in list_dirs:
         if slot == d[4:5]:
@@ -347,7 +346,7 @@ def load_game(request, slot=None):
             game.load(pickle.load(fd))
             fd.close()
             loaded = True
-    
+
     # information on slots
     result = _information_savefile(game)
     result['loaded'] = loaded
