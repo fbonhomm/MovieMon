@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block screen %}
+<div class="screen_back">
+	<div class="screen_only">
+		{% block inside_screen %}
+
+		{% endblock %}
+	</div>
+</div>
+{% endblock %}

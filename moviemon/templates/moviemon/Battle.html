@@ -1,0 +1,26 @@
+{% extends "screen.html" %}
+
+{% load static %}
+
+{% block inside_screen %}
+  <img height="100%" width="100%" src="{% static 'images/base.jpg' %}">
+
+	{% if info_event %}
+		<div class="event_object">
+			<img height="100%" width="100%" src="/static/images/{{ info_event.id }}.jpg">
+		</div>
+
+    {% if info_event.text %}
+      <p class="event_text_object">{{ info_event.text }}</p>
+    {% endif %}
+	{% endif %}
+
+
+  <div class="battle_movieball">
+    <p class="battle_movieball_font">movieballs: {{ movieballs }}</p>
+    <p class="battle_movieball_font">ennemy strength: {{ info_event.rating }}</p>
+    <p class="battle_movieball_font">catched chance: {{ info_event.catchedChance }}</p>
+    <p class="battle_movieball_font">strength: {{ strength }}</p>
+  </div>
+
+{% endblock %}

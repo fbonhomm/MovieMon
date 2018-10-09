@@ -1,0 +1,26 @@
+{% extends "screen.html" %}
+
+{% load static %}
+
+{% block inside_screen %}
+	<center><h4 class="title_page">MOVIEDEX</h4></center>
+
+  {% if moviemon_id %}
+    <div class="cover">
+      <img height="100%" width="100%" src="/static/images/{{ moviemon_id }}.jpg">
+    </div>
+  {% elif details %}
+    <div class="icon">
+      <img height="30%" width="30%" src="/static/images/{{ details.id }}.jpg">
+    </div>
+    <div class="description">
+      <p class="text">title: {{ details.title }} </p>
+      <p class="text">rating: {{ details.rating }} </p>
+      <p class="text">released: {{ details.released }} </p>
+      <p class="text">actors: {{ details.actors }} </p>
+      <p class="text">director: {{ details.director }} </p>
+      <p class="text">synopsis: {{ details.synopsis }} </p>
+    </div>
+  {% endif %}
+
+{% endblock %}
